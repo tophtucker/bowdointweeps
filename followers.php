@@ -13,6 +13,7 @@ function getConnectionWithAccessToken($oauth_token, $oauth_token_secret) {
 $connection = getConnectionWithAccessToken("5056501-ujO2WnCuxruqoDbUxPKzcEybDdSEJh5G39kBGkbj2F", "4SJgrmGwbTObWiUQwCPoaRZwAfJceFeg2kqWW1jPawjDU");
 
 //$content = $connection->get("lists/members.json?slug=alumni-students-1&owner_screen_name=bowdoincollege&cursor=-1");
+//print_r($content);
 //$users = $content->users;
 
 $users = array();
@@ -55,21 +56,31 @@ usort($users, "cmp_followers");
 <html lang="en">
 <head>
 	<meta charset="utf-8" />
-	<title>Bowdoin alumni with most followers</title>
+	<title>Bowdoin alumni sorted by number of Twitter followers</title>
+	
+	<link rel="stylesheet" href="style.css">
+	
+	<!-- Bootstrap CDN: Latest compiled and minified CSS -->
+	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.1/css/bootstrap.min.css">
+	<!-- Bootstrap CDN: Latest compiled and minified JavaScript -->
+	<script src="//netdna.bootstrapcdn.com/bootstrap/3.0.1/js/bootstrap.min.js"></script>
+	
 </head>
 <body>
 
-<h1>Bowdoin alumni with most followers</h1>
+<h1>Bowdoin alumni sorted by number of Twitter followers</h1>
 
-<table>
+<hr>
+
+<table class="table-hover">
 <? foreach($users as $n => $user): ?>
-	<tr>
-		<td><?= $n+1 ?></td>
-		<td><img src="<?= $user->profile_image_url ?>"></td>
-		<td><?= $user->name ?></td>
-		<td><?= $user->screen_name ?></td>
-		<td><?= $user->description ?></td>
-		<td><?= $user->followers_count ?></td>
+	<tr class="user" onclick="document.location = 'https://twitter.com/<?= $user->screen_name ?>';">
+		<td class="user-rank"><?= $n+1 ?></td>
+		<td class="user-pic"><img src="<?= $user->profile_image_url ?>"></td>
+		<td class="user-name"><?= $user->name ?></td>
+		<td class="user-handle">@<?= $user->screen_name ?></td>
+		<td class="user-desc"><?= $user->description ?></td>
+		<td class="user-followers"><?= number_format($user->followers_count) ?></td>
 	</tr>
 <? endforeach; ?>
 </table>

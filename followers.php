@@ -4,6 +4,8 @@ session_start();
 require_once('twitteroauth/twitteroauth.php');
 require_once('config.php');
 
+date_default_timezone_set('America/New_York');
+
 // instructions from here https://dev.twitter.com/docs/auth/oauth/single-user-with-examples#php
 function getConnectionWithAccessToken($oauth_token, $oauth_token_secret) {
   $connection = new TwitterOAuth(CONSUMER_KEY, CONSUMER_SECRET, $oauth_token, $oauth_token_secret);
@@ -33,6 +35,16 @@ $next_cursor = -1;
 $i = 0;
 while($next_cursor !== 0) {
 	$page = $connection->get("lists/members.json?slug=alumni-students-2&owner_screen_name=bowdoincollege&cursor=".$next_cursor);
+	$next_cursor = $page->next_cursor;
+	$users = array_merge($users, $page->users);
+	$i++;
+}
+
+// fill in some gaps with my own list
+$next_cursor = -1;
+$i = 0;
+while($next_cursor !== 0) {
+	$page = $connection->get("lists/members.json?slug=bowdoin-alums&owner_screen_name=tophtucker&cursor=".$next_cursor);
 	$next_cursor = $page->next_cursor;
 	$users = array_merge($users, $page->users);
 	$i++;
@@ -68,19 +80,35 @@ usort($users, "cmp_followers");
 </head>
 <body>
 
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#xfbml=1&appId=342498109177441";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
 <h1>Bowdoin alumni sorted by number of Twitter followers</h1>
+<p>Drawn mostly from <a href="https://twitter.com/bowdoincollege" target="new">@BowdoinCollege</a>'s alumni lists, volumes <a href="https://twitter.com/BowdoinCollege/lists/alumni-students-1" target="new">1</a> and <a href="https://twitter.com/BowdoinCollege/lists/alumni-students-2" target="new">2</a>. Assembled by <a href="https://twitter.com/tophtucker" target="new">@tophtucker</a>. Last updated <?=date('m/d/Y h:i:s a')?>.</p>
+<div class="fb-like" data-href="http://toph.me/bowdointweeps" data-colorscheme="light" data-layout="button_count" data-action="like" data-show-faces="false" data-send="false"></div>
+<a href="https://twitter.com/share" class="twitter-share-button" data-lang="en">Tweet</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
 
 <hr>
 
 <table class="table-hover">
 <? foreach($users as $n => $user): ?>
-	<tr class="user" onclick="document.location = 'https://twitter.com/<?= $user->screen_name ?>';">
-		<td class="user-rank"><?= $n+1 ?></td>
-		<td class="user-pic"><img src="<?= $user->profile_image_url ?>"></td>
-		<td class="user-name"><?= $user->name ?></td>
-		<td class="user-handle">@<?= $user->screen_name ?></td>
-		<td class="user-desc"><?= $user->description ?></td>
-		<td class="user-followers"><?= number_format($user->followers_count) ?></td>
+	<tr class="user">
+		<td class="user-rank"><a href="https://twitter.com/<?= $user->screen_name ?>" target="new"><?= $n+1 ?></a></td>
+		<td class="user-pic"><a href="https://twitter.com/<?= $user->screen_name ?>" target="new"><img src="<?= $user->profile_image_url ?>" width="48" height="48"></a></td>
+		<td class="user-name"><a href="https://twitter.com/<?= $user->screen_name ?>" target="new"><?= $user->name ?><? if($user->verified): ?> <img src="verified.png" class="verified" width="15" height="15"><? endif; ?></a></td>
+		<td class="user-handle"><a href="https://twitter.com/<?= $user->screen_name ?>" target="new">@<?= $user->screen_name ?></a></td>
+		<td class="user-desc"><a href="https://twitter.com/<?= $user->screen_name ?>" target="new"><?= $user->description ?></a></td>
+		<td class="user-followers"><a href="https://twitter.com/<?= $user->screen_name ?>" target="new"><?= number_format($user->followers_count) ?></a></td>
+		<td class="user-search-o"><a href="http://bowdoinorient.com/search?q=<?= $user->name ?>" target="new"><img src="o.png" width="16" height="16"></a></td>
+		<td class="user-search-g"><a href="http://google.com/search?q=<?= $user->name ?>" target="new"><img src="g.png" width="16" height="16"></a></td>
+		<td class="user-search-w"><a href="http://en.wikipedia.org/w/index.php?title=Special:Search&search=<?= $user->name ?>" target="new"><img src="w.png" width="16" height="16"></a></td>
 	</tr>
 <? endforeach; ?>
 </table>

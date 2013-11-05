@@ -24,5 +24,6 @@ switch ($connection->http_code) {
     break;
   default:
     /* Show notification if something went wrong. */
+    //print_r($request_token ); //print the error object
     echo 'Could not connect to Twitter. Refresh the page or try again later.';
 }

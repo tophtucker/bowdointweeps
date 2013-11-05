@@ -61,15 +61,18 @@ usort($users, "cmp_followers");
 
 <h1>Bowdoin alumni with most followers</h1>
 
-<ol>
-<? 
-//print_r($users);
-foreach($users as $user) { 
-	//print_r($user);
-	print "<li><b>".$user->screen_name."</b> - ".$user->followers_count."</li>";
-}
-?>
-</ol>
+<table>
+<? foreach($users as $n => $user): ?>
+	<tr>
+		<td><?= $n+1 ?></td>
+		<td><img src="<?= $user->profile_image_url ?>"></td>
+		<td><?= $user->name ?></td>
+		<td><?= $user->screen_name ?></td>
+		<td><?= $user->description ?></td>
+		<td><?= $user->followers_count ?></td>
+	</tr>
+<? endforeach; ?>
+</table>
 
 </body>
 </html>

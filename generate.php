@@ -1,10 +1,31 @@
 <?
 
 session_start();
+
+// abraham's twitteroauth library
+// https://github.com/abraham/twitteroauth
 require_once('twitteroauth/twitteroauth.php');
+
+// store consumer key/secret and access token/secret away from prying eyes
+// config.php is gitignored; confer config-sample.php
 require_once('config.php');
 
 date_default_timezone_set('America/New_York');
+
+/*
+
+Relevant Twitter documentation:
+
+Get tokens from dev.twitter.com:
+https://dev.twitter.com/docs/auth/tokens-devtwittercom
+
+Single-user OAuth:
+https://dev.twitter.com/docs/auth/oauth/single-user-with-examples#php
+
+REST API 1.1, GET lists/members:
+https://dev.twitter.com/docs/api/1.1/get/lists/members
+
+*/
 
 // create oauth object using keys stored in config.php, which is gitignored
 $connection = new TwitterOAuth(CONSUMER_KEY, CONSUMER_SECRET, ACCESS_TOKEN, ACCESS_TOKEN_SECRET); 
@@ -136,6 +157,21 @@ $users = array_unique($users, SORT_REGULAR);
   <p>“All is vanity, nothing is fair.” </p>
   <small>Georgina Howell, in <cite title="Source Title"><em>The Times Sunday Magazine</em>, 1986</cite></a></small>
 </blockquote>
+
+<!-- 
+
+"Then I saw in my dream, that when they were got out of the wilderness,
+they presently saw a town before them, and the name of that town is
+Vanity; and at the town there is a fair kept, called Vanity Fair: it is
+kept all the year long... these pilgrims set very light by all their
+wares; they cared not so much as to look upon them; and if they called
+upon them to buy, they would put their fingers in their ears, and cry,
+Turn away mine eyes from beholding vanity, and look upwards, signifying
+that their trade and traffic was in heaven." 
+
+http://www.gutenberg.org/files/131/131-h/131-h.htm
+
+-->
 
 </body>
 </html>

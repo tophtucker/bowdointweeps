@@ -29,3 +29,7 @@ td a:hover {
 .user-name {
 	font-weight: bold;
 }
+
+.verified {
+	margin-top: -2px;
+}

@@ -62,13 +62,18 @@ function cmp_followers($a, $b)
 // sort users from highest follower count to lowest
 usort($users, "cmp_followers");
 
+// remove duplicates
+$users = array_unique($users, SORT_REGULAR);
+
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
 	<meta charset="utf-8" />
-	<title>Bowdoin alumni sorted by number of Twitter followers</title>
+	<title>Bowdoin alumni* sorted by number of Twitter followers</title>
+	
+	<link rel="shortcut icon" href="polarchomp.png">
 	
 	<link rel="stylesheet" href="style.css">
 	
@@ -80,6 +85,17 @@ usort($users, "cmp_followers");
 </head>
 <body>
 
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-45488007-1', 'toph.me');
+  ga('send', 'pageview');
+
+</script>
+
 <div id="fb-root"></div>
 <script>(function(d, s, id) {
   var js, fjs = d.getElementsByTagName(s)[0];
@@ -89,8 +105,10 @@ usort($users, "cmp_followers");
   fjs.parentNode.insertBefore(js, fjs);
 }(document, 'script', 'facebook-jssdk'));</script>
 
-<h1>Bowdoin alumni sorted by number of Twitter followers</h1>
-<p>Drawn mostly from <a href="https://twitter.com/bowdoincollege" target="new">@BowdoinCollege</a>'s alumni lists, volumes <a href="https://twitter.com/BowdoinCollege/lists/alumni-students-1" target="new">1</a> and <a href="https://twitter.com/BowdoinCollege/lists/alumni-students-2" target="new">2</a>. Assembled by <a href="https://twitter.com/tophtucker" target="new">@tophtucker</a>. Last updated <?=date('m/d/Y h:i:s a')?>.</p>
+<img src="polarchase.png" style="margin-top:-20px;" align="right">
+
+<h1>Bowdoin alumni* sorted by number of Twitter followers</h1>
+<p>*Rather, people who have attended or currently attend. List mostly assembled by <a href="https://twitter.com/bowdoincollege" target="new">@BowdoinCollege</a>. Site assembled by <a href="https://twitter.com/tophtucker" target="new">@tophtucker</a>. <br/><small>Last updated <?=date('m/d/Y h:i:s a')?>.</small></p>
 <div class="fb-like" data-href="http://toph.me/bowdointweeps" data-colorscheme="light" data-layout="button_count" data-action="like" data-show-faces="false" data-send="false"></div>
 <a href="https://twitter.com/share" class="twitter-share-button" data-lang="en">Tweet</a>
 <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
@@ -106,9 +124,9 @@ usort($users, "cmp_followers");
 		<td class="user-handle"><a href="https://twitter.com/<?= $user->screen_name ?>" target="new">@<?= $user->screen_name ?></a></td>
 		<td class="user-desc"><a href="https://twitter.com/<?= $user->screen_name ?>" target="new"><?= $user->description ?></a></td>
 		<td class="user-followers"><a href="https://twitter.com/<?= $user->screen_name ?>" target="new"><?= number_format($user->followers_count) ?></a></td>
-		<td class="user-search-o"><a href="http://bowdoinorient.com/search?q=<?= $user->name ?>" target="new"><img src="o.png" width="16" height="16"></a></td>
-		<td class="user-search-g"><a href="http://google.com/search?q=<?= $user->name ?>" target="new"><img src="g.png" width="16" height="16"></a></td>
-		<td class="user-search-w"><a href="http://en.wikipedia.org/w/index.php?title=Special:Search&search=<?= $user->name ?>" target="new"><img src="w.png" width="16" height="16"></a></td>
+		<td class="user-search-o"><a href="http://bowdoinorient.com/search?q=<?= htmlspecialchars($user->name) ?>" title="Search for <?= htmlspecialchars($user->name) ?> on The Bowdoin Orient" target="new"><img src="o.png" width="16" height="16"></a></td>
+		<td class="user-search-g"><a href="http://google.com/search?q=<?= htmlspecialchars($user->name) ?>" title="Search for <?= htmlspecialchars($user->name) ?> on Google" target="new"><img src="g.png" width="16" height="16"></a></td>
+		<td class="user-search-w"><a href="http://en.wikipedia.org/w/index.php?title=Special:Search&search=<?= htmlspecialchars($user->name) ?>" title="Search for <?= htmlspecialchars($user->name) ?> on Wikipedia" target="new"><img src="w.png" width="16" height="16"></a></td>
 	</tr>
 <? endforeach; ?>
 </table>

@@ -6,48 +6,38 @@ require_once('config.php');
 
 date_default_timezone_set('America/New_York');
 
-// instructions from here https://dev.twitter.com/docs/auth/oauth/single-user-with-examples#php
-function getConnectionWithAccessToken($oauth_token, $oauth_token_secret) {
-  $connection = new TwitterOAuth(CONSUMER_KEY, CONSUMER_SECRET, $oauth_token, $oauth_token_secret);
-  return $connection;
-}
- 
-$connection = getConnectionWithAccessToken("5056501-ujO2WnCuxruqoDbUxPKzcEybDdSEJh5G39kBGkbj2F", "4SJgrmGwbTObWiUQwCPoaRZwAfJceFeg2kqWW1jPawjDU");
+// create oauth object using keys stored in config.php, which is gitignored
+$connection = new TwitterOAuth(CONSUMER_KEY, CONSUMER_SECRET, ACCESS_TOKEN, ACCESS_TOKEN_SECRET); 
 
-//$content = $connection->get("lists/members.json?slug=alumni-students-1&owner_screen_name=bowdoincollege&cursor=-1");
-//print_r($content);
-//$users = $content->users;
+// twitter lists from which to fetch users
+// should be collectively exhaustive, but needn't be mutually exclusive (though it helps api efficiency)
+$lists = array(
+	array(
+		"user" => "bowdoincollege",
+		"list" => "alumni-students-1"),
+	array(
+		"user" => "bowdoincollege",
+		"list" => "alumni-students-2"),
+	array(
+		"user" => "tophtucker",
+		"list" => "bowdoin-alums")
+	);
 
+// users from all lists will be dumped in here and then ordered and de-duped
 $users = array();
 
-// load everything from first bowdoin alumni list
-$next_cursor = -1;
-$i = 0;
-while($next_cursor !== 0) {
-	$page = $connection->get("lists/members.json?slug=alumni-students-1&owner_screen_name=bowdoincollege&cursor=".$next_cursor);
-	$next_cursor = $page->next_cursor;
-	$users = array_merge($users, $page->users);
-	$i++;
-}
-
-// load everything from second bowdoin alumni list
-$next_cursor = -1;
-$i = 0;
-while($next_cursor !== 0) {
-	$page = $connection->get("lists/members.json?slug=alumni-students-2&owner_screen_name=bowdoincollege&cursor=".$next_cursor);
-	$next_cursor = $page->next_cursor;
-	$users = array_merge($users, $page->users);
-	$i++;
-}
-
-// fill in some gaps with my own list
-$next_cursor = -1;
-$i = 0;
-while($next_cursor !== 0) {
-	$page = $connection->get("lists/members.json?slug=bowdoin-alums&owner_screen_name=tophtucker&cursor=".$next_cursor);
-	$next_cursor = $page->next_cursor;
-	$users = array_merge($users, $page->users);
-	$i++;
+// fetch all lists and merge into users array
+// this is pretty api-intensive; you can easily get rate-limited if you refresh a few times within a few minutes
+foreach($lists as $list) {
+	$next_cursor = -1;
+	$i = 0;
+	// cursor through each page of the list
+	while($next_cursor !== 0) {
+		$page = $connection->get("lists/members.json?slug=".$list['list']."&owner_screen_name=".$list['user']."&cursor=".$next_cursor);
+		$next_cursor = $page->next_cursor;
+		$users = array_merge($users, $page->users);
+		$i++;
+	}
 }
 
 // compare follower counts to sort highest to lowest
@@ -77,6 +67,8 @@ $users = array_unique($users, SORT_REGULAR);
 	
 	<link rel="stylesheet" href="style.css">
 	
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+	
 	<!-- Bootstrap CDN: Latest compiled and minified CSS -->
 	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.1/css/bootstrap.min.css">
 	<!-- Bootstrap CDN: Latest compiled and minified JavaScript -->
@@ -85,6 +77,7 @@ $users = array_unique($users, SORT_REGULAR);
 </head>
 <body>
 
+<!-- Google Analytics -->
 <script>
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
   (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
@@ -96,6 +89,7 @@ $users = array_unique($users, SORT_REGULAR);
 
 </script>
 
+<!-- Facebook JS -->
 <div id="fb-root"></div>
 <script>(function(d, s, id) {
   var js, fjs = d.getElementsByTagName(s)[0];
@@ -130,6 +124,18 @@ $users = array_unique($users, SORT_REGULAR);
 	</tr>
 <? endforeach; ?>
 </table>
+
+<hr>
+
+<blockquote class="pull-right">
+  <p>“This list makes me want to kill myself.”</p>
+  <small>Jay Caspian Kang, <a href="https://twitter.com/jaycaspiankang/status/397864888837476352" target="new"><cite title="Source Title">on Twitter</cite></a></small>
+</blockquote>
+
+<blockquote>
+  <p>“All is vanity, nothing is fair.” </p>
+  <small>Georgina Howell, in <cite title="Source Title"><em>The Times Sunday Magazine</em>, 1986</cite></a></small>
+</blockquote>
 
 </body>
 </html>

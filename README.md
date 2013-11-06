@@ -3,6 +3,8 @@ bowdointweeps
 
 Bowdoin alumni sorted by number of Twitter followers.
 
+Uses abraham's twitteroauth php library: https://github.com/abraham/twitteroauth
+
 The way this works is currently very low-tech: I run `generate.php` and manually save the html output as the static `index.html`. Yeah yeah, I'll improve.
 
 `generate.php` takes an array of Twitter lists, fetches all members, orders & de-dupes. That's the gist of it.
